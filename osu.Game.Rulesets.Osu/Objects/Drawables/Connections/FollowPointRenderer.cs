@@ -9,6 +9,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Pooling;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Pooling;
+using osu.Game.Rulesets.Osu.Configuration;
 
 namespace osu.Game.Rulesets.Osu.Objects.Drawables.Connections
 {
@@ -22,12 +23,16 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables.Connections
         private DrawablePool<FollowPointConnection> connectionPool;
         private DrawablePool<FollowPoint> pointPool;
 
+        private readonly Bindable<bool> showFollowpoints = new Bindable<bool>(true);
+
         private readonly List<FollowPointLifetimeEntry> lifetimeEntries = new List<FollowPointLifetimeEntry>();
         private readonly Dictionary<HitObject, IBindable> startTimeMap = new Dictionary<HitObject, IBindable>();
 
         [BackgroundDependencyLoader]
-        private void load()
+        private void load(OsuRulesetConfigManager rulesetConfig)
         {
+            rulesetConfig?.BindWith(OsuRulesetSetting.ShowFollowpoints, showFollowpoints);
+
             InternalChildren = new Drawable[]
             {
                 connectionPool = new DrawablePool<FollowPointConnection>(1, 200),
@@ -37,19 +42,25 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables.Connections
 
         public void AddFollowPoints(OsuHitObject hitObject)
         {
-            addEntry(hitObject);
+            if (showFollowpoints.Value)
+            {
+                addEntry(hitObject);
 
-            var startTimeBindable = hitObject.StartTimeBindable.GetBoundCopy();
-            startTimeBindable.ValueChanged += _ => onStartTimeChanged(hitObject);
-            startTimeMap[hitObject] = startTimeBindable;
+                var startTimeBindable = hitObject.StartTimeBindable.GetBoundCopy();
+                startTimeBindable.ValueChanged += _ => onStartTimeChanged(hitObject);
+                startTimeMap[hitObject] = startTimeBindable;
+            }
         }
 
         public void RemoveFollowPoints(OsuHitObject hitObject)
         {
-            removeEntry(hitObject);
+            if (showFollowpoints.Value)
+            {
+                removeEntry(hitObject);
 
-            startTimeMap[hitObject].UnbindAll();
-            startTimeMap.Remove(hitObject);
+                startTimeMap[hitObject].UnbindAll();
+                startTimeMap.Remove(hitObject);
+            }
         }
 
         private void addEntry(OsuHitObject hitObject)
