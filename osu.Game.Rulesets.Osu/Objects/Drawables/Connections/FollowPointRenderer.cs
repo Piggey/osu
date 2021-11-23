@@ -42,25 +42,25 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables.Connections
 
         public void AddFollowPoints(OsuHitObject hitObject)
         {
-            if (showFollowpoints.Value)
-            {
-                addEntry(hitObject);
+            if (showFollowpoints.Value == false)
+                return;
 
-                var startTimeBindable = hitObject.StartTimeBindable.GetBoundCopy();
-                startTimeBindable.ValueChanged += _ => onStartTimeChanged(hitObject);
-                startTimeMap[hitObject] = startTimeBindable;
-            }
+            addEntry(hitObject);
+
+            var startTimeBindable = hitObject.StartTimeBindable.GetBoundCopy();
+            startTimeBindable.ValueChanged += _ => onStartTimeChanged(hitObject);
+            startTimeMap[hitObject] = startTimeBindable;
         }
 
         public void RemoveFollowPoints(OsuHitObject hitObject)
         {
-            if (showFollowpoints.Value)
-            {
-                removeEntry(hitObject);
+            if (showFollowpoints.Value == false)
+                return;
 
-                startTimeMap[hitObject].UnbindAll();
-                startTimeMap.Remove(hitObject);
-            }
+            removeEntry(hitObject);
+
+            startTimeMap[hitObject].UnbindAll();
+            startTimeMap.Remove(hitObject);
         }
 
         private void addEntry(OsuHitObject hitObject)
