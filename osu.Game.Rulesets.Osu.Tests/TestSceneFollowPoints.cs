@@ -11,6 +11,7 @@ using osu.Framework.Timing;
 using osu.Framework.Utils;
 using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.ControlPoints;
+using osu.Game.Rulesets.Osu.Configuration;
 using osu.Game.Rulesets.Osu.Objects;
 using osu.Game.Rulesets.Osu.Objects.Drawables;
 using osu.Game.Rulesets.Osu.Objects.Drawables.Connections;
@@ -23,10 +24,13 @@ namespace osu.Game.Rulesets.Osu.Tests
     {
         private Container<DrawableOsuHitObject> hitObjectContainer;
         private FollowPointRenderer followPointRenderer;
+        private readonly OsuRulesetConfigManager rulesetConfig = new OsuRulesetConfigManager(null, new RulesetInfo());
 
         [SetUp]
         public void Setup() => Schedule(() =>
         {
+            rulesetConfig.SetValue(OsuRulesetSetting.ShowFollowpoints, true);
+
             Children = new Drawable[]
             {
                 hitObjectContainer = new TestHitObjectContainer { RelativeSizeAxes = Axes.Both },
@@ -37,6 +41,7 @@ namespace osu.Game.Rulesets.Osu.Tests
         [Test]
         public void TestAddObject()
         {
+            // AddStep("followpoints enabled", () => rulesetConfig.SetValue(OsuRulesetSetting.ShowFollowpoints, true));
             addObjectsStep(() => new OsuHitObject[] { new HitCircle { Position = new Vector2(100, 100) } });
 
             assertGroups();
